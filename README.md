@@ -1,2 +1,19 @@
 # Linear-Cryptanalysis-of-AES-S-box
 This is my final project for Computer Security
+
+I did my project on how the Advanced Encryption Standard(AES) S-box is generated.  The AES S-box is a component of the AES round function, which is essentially a lookup table, that takes an XOR between the plaintext and a subkey as its input, and outputs the value that this result is mapped to.  The S-box is the only non-linear element of the round function, which means that it is important that this component is resistant to mappings of linear functions.  An S-box that isn't resistant to a linear cryptanalytic attack will have a significant number of high probablistic functions that can be used in a known-plaintext attack to significantly reduce the number of keys that need to be tested.
+
+The AES S-box is structured in a way that it is as resistant as it can possibly be to linear cryptanalysis.  The reason for this is the mathematics that went into the construction of the table.  This is the main reason for my interest in this topic.  This project required that I learn about finite field arithmetic and how to apply the extended euclidean algorithm to extension fields of size 2^n.  An example of this process is shown in the file called "EEA on GF(256) polynomial."
+
+I also performed a linear cryptanalysis on both the AES S-box and a randomly generated S-box.  Here is a breakdown of what each of the programs does:
+
+AESsbox.exe
+	The main function of this program is to calculate the modular inverses of the polynomials in the Galois Field 256 using an irreducible polynomial provided by the user at the start of the program, and then applying an affine transformation to get the final result.  This program does many things based on the options that you send to the program.  It does not take any parameters other than the options that you provide.  -p and -w will print the S-box and write the S-box to a text file respectively.  The -w option will write the S-box to a file called AESsbox.txt.  If you also call it with -i, then it will not perform the affine transformation and you will only see the inverses of each polynomials given the irreducible polynomial that you provide when you first run the program.  One exclusive option is -l (lower-case el), which will calculate for you all of the irreducible polynomials of degree 8.  If you provide a polynomial that is not irreducible, then you will see a lot of 0x63’s because this is the result of performing an affine transformation on 0, which is the default value for inverse when a particular polynomial does not have an inverse.
+Example program call:  AESsbox.exe –p  // Prints S-box to terminal
+
+linearcrypt.exe
+	This program performs a linear cryptanalysis of the S-box that is sent to it as its first parameter.  The 2nd parameter is the name of the file that you want to write to.  It creates both a text file and a portable greymap file (.pgm).  The .pgm file can be opened with GIMP.  Each pixel of the 255x256 image represents one of the possible linear functions and the probability that it happens to accurately describe information about the key.  The goal is to make this probability as close to 50% as possible.  Completely black means 0% deviation from 50% probability and lighter shades of grey resemble larger deviations from 50% probability.  The mathematical nature of the AES S-box can be seen in the .pgm file called "example1.pgm".  A random S-box was also analyzed for comparison in the .pgm file called "example2.pgm".
+Example program call:  linearcrypt.exe AESsbox.txt example1
+
+randomsbox.exe
+	This program simply generates a random S-box where all output elements form a one-to-one correspondence with its input elements.  The results are written to a file called randomsbox.txt, which has the same format as AESsbox.txt.
